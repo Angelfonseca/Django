@@ -1,0 +1,45 @@
+<!-- En tu archivo HTML, por ejemplo, templates/scan_barcode.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escaneo de Códigos de Barras</title>
+    <!-- Agrega aquí tus estilos o enlaces a bibliotecas externas -->
+</head>
+<body>
+    <h1>Escaneo de Códigos de Barras</h1>
+
+    <!-- Formulario para escanear códigos de barras -->
+    <form id="barcode-form">
+        <label for="barcode-input">Escanear código de barras:</label>
+        <input type="text" id="barcode-input" placeholder="Escanea un código de barras" readonly>
+        <button type="button" onclick="scanBarcode()">Escanear</button>
+    </form>
+
+    <!-- Elemento HTML para mostrar el código de barras escaneado -->
+    <div id="display-barcode"></div>
+
+    <!-- Agrega aquí tus scripts o enlaces a bibliotecas de JavaScript, si es necesario -->
+
+    <script>
+        function scanBarcode() {
+            // Simulación de escaneo de código de barras (puedes adaptar esta lógica)
+            var barcodeValue = prompt('Ingresa un código de barras:');
+            
+            // Muestra el código de barras en el HTML
+            document.getElementById('display-barcode').innerText = 'Código de barras escaneado: ' + barcodeValue;
+
+            // Envia el código de barras al servidor Django mediante una solicitud AJAX (fetch)
+            fetch('http://localhost:8000/api/barcodes/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: barcodeValue }),
+            })
+            .then(response => response.json())
+            .then(data => console.log('Respuesta del servidor:', data))
+            .catch(error => console.error('Error al enviar el código de barras al servidor:', error));
+        }
+    </script>
+</body>
+</html>

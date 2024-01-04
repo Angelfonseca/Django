@@ -1,9 +1,9 @@
 from rest_framework import viewsets
-from .serializer import UserSerializer, ProductSerializer
-from .models import Product, User
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-import requests
+from .serializer import UserSerializer, ProductSerializer, BarcodeSerializer
+from .models import Product, User, Barcode
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -13,20 +13,20 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-@api_view(['POST'])
-def read_barcode(request):
-    barcode_data = request.data.get('barcode_data')
-    if barcode_data:
-        try:
-            # Hacer una solicitud a un servicio web (puedes usar tu propia instancia de ZXing o un servicio público)
-            zxing_url = 'https://zxing.org/w/decode'
-            response = requests.get(zxing_url, params={'u': barcode_data})
-            
-            # Analizar la respuesta JSON
-            result = response.json()
-            
-            return Response(result)
-        except Exception as e:
-            return Response({'error': str(e)}, status=400)
-    else:
-        return Response({'error': 'No se proporcionó el dato del código de barras'}, status=400)
+class BarcodeViewSet(viewsets.ModelViewSet):
+    queryset = Barcode.objects.all()
+    serializer_class = BarcodeSerializer
+    
+@csrf_exempt
+def scan_barcode(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        barcode_value = data.get('barcode', '')
+
+        # Guarda el código de barras en la base de datos
+        barcode = Barcode.objects.create(code=barcode_value)
+        barcode.save()
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False})
