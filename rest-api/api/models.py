@@ -1,26 +1,26 @@
 from django.db import models
 
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=100, unique=True)
-    stock = models.IntegerField()
+class Sensor(models.Model):
+    soilhumsens = models.DecimalField(max_digits=10, decimal_places=2)
+    humsens = models.DecimalField(max_digits=10, decimal_places=2)
+    temp = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.name
+        return self
 
 class User(models.Model):
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     role = models.CharField(max_length=20)
-    curp = models.CharField(max_length=18)
-    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
     
-class Barcode(models.Model):
-    code = models.CharField(max_length=255, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+class Module(models.Model):
+    Sensors = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=100)
     
     def __str__(self):
-        return self.code
+        return self.name
+
